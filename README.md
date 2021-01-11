@@ -1,2 +1,2 @@
-# web.lua
-web.lua is a web framework for Lua that is as simple as it is powerful.
+# wlua
+wlua is a web framework for Lua that is as simple as it is powerful.
