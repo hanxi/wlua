@@ -1,0 +1,9 @@
+/run
+/log
+/cservice
+/luaclib
+*.o
+*.a
+*.so
+*.dSYM
+.DS_Store
