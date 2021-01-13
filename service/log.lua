@@ -4,6 +4,7 @@ local config = require "config"
 local util_date = require "util.date"
 local util_file = require "util.file"
 local util_string = require "util.string"
+local log = require "log"
 
 -- is daemon
 local daemon = config.get("daemon")
@@ -73,7 +74,7 @@ local SIGHUP_CMD = {}
 -- cmd for stop server
 function SIGHUP_CMD.stop()
     -- TODO: broadcast stop signal
-    skynet.error("handle SIGHUP, skynet will be stop")
+    log.warn("Handle SIGHUP, wlua will be stop.")
     skynet.sleep(100)
     skynet.abort()
 end
@@ -102,7 +103,7 @@ skynet.register_protocol {
         if func then
             func()
         else
-            skynet.error(string.format("Unknow sighup cmd. Need set sighup file. wlua_sighup_file: '%s'", sighup_file))
+            log.error(string.format("Unknow sighup cmd, Need set sighup file. wlua_sighup_file: '%s'", sighup_file))
         end
     end
 }
@@ -117,7 +118,7 @@ skynet.start(function()
         if f then
             skynet.ret(skynet.pack(f(...)))
         else
-            skynet.error("invalid cmd. cmd:", cmd)
+            log.error("Invalid cmd. cmd:", cmd)
         end
     end)
 

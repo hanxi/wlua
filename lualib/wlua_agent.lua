@@ -4,19 +4,14 @@ local httpd = require "http.httpd"
 local sockethelper = require "http.sockethelper"
 local urllib = require "http.url"
 local log = require "log"
-local web_router = require "web_agent.web_router"
-local router = require 'router'
-local util_table = require "util.table"
-local user_mng = require "web_agent.user.user_mng"
+local config = require "config"
 
-local agent_id, protocol = ...
-local protocol = protocol or "http"
+local protocol
+local agent_id
+local opened = false
 
 local SOCKET = {}
 local CMD = {}
-
-local r = router.new()
-web_router(r)
 
 local resp_header = {
     ["Access-Control-Allow-Origin"] = "*",
@@ -28,10 +23,10 @@ local resp_header = {
 local function response(id, write, ...)
     local ok, err = httpd.write_response(write, ...)
     if not ok then
-        -- if err == sockethelper.socket_error , that means socket closed.
-        log.warn(string.format("fd = %d, %s", id, err))
+        if err ~= sockethelper.socket_error then
+            log.warn("Error in response. fd:", id, ",err:", err)
+        end
     end
-    --log.info("fd=", id, ...)
 end
 
 local function handle_request(id, url, method, header, body, interface)
@@ -43,24 +38,14 @@ local function handle_request(id, url, method, header, body, interface)
         query = {}
     end
 
-    log.debug(url, method)
+    log.debug("Handle requrest. url:", url, ",method:", method)
     if method == "OPTIONS" then
         response(id, interface.write, 204, '', resp_header)
         return
     end
 
-    local ok, msg, code, _resp_header = r:execute(method, path, query, {header = header, body = body})
-    if ok then
-        --log.info(msg, code)
-        if _resp_header then
-            util_table.merge(_resp_header, resp_header)
-        else
-            _resp_header = resp_header
-        end
-        response(id, interface.write, code or 200, msg, _resp_header)
-    else
-        response(id, interface.write, 404, "404 Not found", resp_header)
-    end
+    local msg = "hello world"
+    response(id, interface.write, 200, msg, resp_header)
 end
 
 local SSLCTX_SERVER = nil
@@ -80,8 +65,7 @@ local function gen_interface(protocol, fd)
             -- openssl req -x509 -newkey rsa:2048 -days 3650 -nodes -keyout server-key.pem -out server-cert.pem
             local certfile = skynet.getenv("wlua_certfile") or "./server-cert.pem"
             local keyfile = skynet.getenv("wlua_keyfile") or "./server-key.pem"
-            log.debug("certfile:", certfile)
-			log.debug("keyfile:", keyfile)
+            log.debug("Set https cert file. wlua_certfile:", certfile, "wlua_keyfile:", keyfile)
             SSLCTX_SERVER:set_cert(certfile, keyfile)
         end
         local tls_ctx = tls.newtls("server", SSLCTX_SERVER)
@@ -92,7 +76,7 @@ local function gen_interface(protocol, fd)
             write = tls.writefunc(fd, tls_ctx),
         }
     else
-        log.error(string.format("Invalid protocol: %s", protocol))
+        log.error("Invalid protocol:", protocol)
     end
 end
 
@@ -111,16 +95,16 @@ function SOCKET.request(id)
         interface.init()
     end
 
-    -- limit request body size to 1M (you can pass nil to unlimit)
-    local max_request_data_size = config.get("wlua_max_request_data_size")
-    local code, url, method, header, body = httpd.read_request(interface.read, max_request_data_size)
+    -- limit request body size
+    local max_request_body_size = config.get("wlua_max_request_body_size")
+    local code, url, method, header, body = httpd.read_request(interface.read, max_request_body_size)
     -- TODO: access.log
-    log.info("request url:", url)
+    log.info("Request. url:", url)
     if not code then
         if url == sockethelper.socket_error then
-            log.warn("socket closed")
+            log.warn("Socket closed. id:", id)
         else
-            log.warn("request error. url:", url)
+            log.warn("Request error. id:", id, ",url:", url)
         end
         close_socket(id, interface)
         return
@@ -136,18 +120,38 @@ function SOCKET.request(id)
     close_socket(id, interface)
 end
 
-skynet.start(function()
+function CMD.open(_protocol, _agent_id)
+    if opened then
+        return
+    end
+    protocol = _protocol
+    agent_id = _agent_id
+
+    log.info("Open wlua agent. protocol:", protocol, ", agent_id:", agent_id)
     local agent_name = string.format(".wlua_agent_%s_%s", protocol, agent_id)
     skynet.register(agent_name)
+    opened = true
+end
 
-    skynet.dispatch("lua", function (_, _, cmd, subcmd, ...)
-        if cmd == "socket" then
-            local f = SOCKET[subcmd]
-            f(...)
-        else
-            local f = assert(CMD[cmd])
-            skynet.ret(skynet.pack(f(subcmd, ...)))
-        end
+local M = {}
+function M.run()
+    skynet.start(function()
+        skynet.dispatch("lua", function (_, _, cmd, subcmd, ...)
+            if cmd == "socket" then
+                if opened then
+                    local ok,msg = xpcall(SOCKET[subcmd], debug.traceback, ...)
+                    if not ok then
+                        log.error("Error dispatch socket. err:", msg)
+                    end
+                else
+                    log.error("Wlua agent unopened.")
+                end
+            else
+                local f = assert(CMD[cmd])
+                skynet.ret(skynet.pack(f(subcmd, ...)))
+            end
+        end)
     end)
-end)
+end
 
+return M
