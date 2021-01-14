@@ -1,6 +1,6 @@
 local skynet = require "skynet"
 local config = require "config"
-local wlua_agent = require "wlua_agent"
+local wlua_agent = require "wlua.agent"
 local log = require "log"
 
 local M = { VERSION = '0.01' }

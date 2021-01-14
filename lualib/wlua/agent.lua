@@ -4,7 +4,10 @@ local httpd = require "http.httpd"
 local sockethelper = require "http.sockethelper"
 local urllib = require "http.url"
 local log = require "log"
-local config = require "config"
+local request = require "wlua.request"
+
+local traceback = debug.traceback
+local xpcall = xpcall
 
 local protocol
 local agent_id
@@ -29,33 +32,42 @@ local function response(id, write, ...)
     end
 end
 
-local function handle_request(id, url, method, header, body, interface)
-    local path, query_str = urllib.parse(url)
-    local query
-    if query_str then
-        query = urllib.parse_query(query_str)
-    else
-        query = {}
-    end
-
-    log.debug("Handle requrest. url:", url, ",method:", method)
+local function _handle_request(req)
+    log.debug("Handle requrest. url:", req.url, ",method:", req.method)
     if method == "OPTIONS" then
-        response(id, interface.write, 204, '', resp_header)
+        response(req.id, req.interface.write, 204, '', resp_header)
         return
     end
 
     local msg = "hello world"
-    response(id, interface.write, 200, msg, resp_header)
+    response(req.id, req.interface.write, 200, msg, resp_header)
+end
+
+local function handle_request(id, interface)
+    local req = request:new(id, interface)
+    if not req then
+        return
+    end
+
+    -- TODO: access.log 远程主机ip 请求时间 method url code sendbyte
+    log.info("Request. url:", req.url, ", method:", req.method)
+
+    if req.code ~= 200 then
+        response(id, interface.write, req.code)
+        return
+    end
+
+    _handle_request(req)
 end
 
 local SSLCTX_SERVER = nil
-local function gen_interface(protocol, fd)
+local function gen_interface(protocol, id)
     if protocol == "http" then
         return {
             init = nil,
             close = nil,
-            read = sockethelper.readfunc(fd),
-            write = sockethelper.writefunc(fd),
+            read = sockethelper.readfunc(id),
+            write = sockethelper.writefunc(id),
         }
     elseif protocol == "https" then
         local tls = require "http.tlshelper"
@@ -70,54 +82,34 @@ local function gen_interface(protocol, fd)
         end
         local tls_ctx = tls.newtls("server", SSLCTX_SERVER)
         return {
-            init = tls.init_responsefunc(fd, tls_ctx),
+            init = tls.init_responsefunc(id, tls_ctx),
             close = tls.closefunc(tls_ctx),
-            read = tls.readfunc(fd, tls_ctx),
-            write = tls.writefunc(fd, tls_ctx),
+            read = tls.readfunc(id, tls_ctx),
+            write = tls.writefunc(id, tls_ctx),
         }
     else
         log.error("Invalid protocol:", protocol)
     end
 end
 
-local function close_socket(id, interface)
-    socket.close(id)
-    if interface and interface.close then
-        interface.close()
-    end
-end
-
 function SOCKET.request(id)
     socket.start(id)
+
     --log.info("start id:", id)
     local interface = gen_interface(protocol, id)
     if interface.init then
         interface.init()
     end
 
-    -- limit request body size
-    local max_request_body_size = config.get("wlua_max_request_body_size")
-    local code, url, method, header, body = httpd.read_request(interface.read, max_request_body_size)
-    -- TODO: access.log
-    log.info("Request. url:", url)
-    if not code then
-        if url == sockethelper.socket_error then
-            log.warn("Socket closed. id:", id)
-        else
-            log.warn("Request error. id:", id, ",url:", url)
-        end
-        close_socket(id, interface)
-        return
+    local ok,err = xpcall(handle_request, traceback, id, interface)
+    if not ok then
+        log.error("Error handle_request. id:", id, ", err:", err)
     end
 
-    if code ~= 200 then
-        response(id, interface.write, code)
-        close_socket(id, interface)
-        return
+    socket.close(id)
+    if interface and interface.close then
+        interface.close()
     end
-
-    handle_request(id, url, method, header, body, interface)
-    close_socket(id, interface)
 end
 
 function CMD.open(_protocol, _agent_id)
@@ -145,9 +137,9 @@ function M.run()
         skynet.dispatch("lua", function (_, _, cmd, subcmd, ...)
             if cmd == "socket" then
                 if opened then
-                    local ok,msg = xpcall(SOCKET[subcmd], debug.traceback, ...)
+                    local ok,err = xpcall(SOCKET[subcmd], traceback, ...)
                     if not ok then
-                        log.error("Error dispatch socket. err:", msg)
+                        log.error("Error dispatch socket. err:", err)
                     end
                 else
                     log.error("Wlua agent unopened.")
