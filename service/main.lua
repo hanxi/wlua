@@ -1,4 +1,4 @@
-local skynet = require "skynet"
+local skynet = require "skynet.manager"
 local socket = require "skynet.socket"
 local config = require "config"
 local log = require "log"
@@ -29,8 +29,8 @@ local function start(protocol)
     local balance = 1
     local id = socket.listen(host, port)
     log.info("Start web. host:", host, ",port:", port)
-    socket.start(id , function(id, addr)
-        skynet.send(agents[balance], "lua", "socket", "request", id)
+    socket.start(id , function(_id, addr)
+        skynet.send(agents[balance], "lua", "socket", "request", _id)
         balance = balance + 1
         if balance > #agents then
             balance = 1
@@ -40,22 +40,27 @@ end
 
 -- other skynet cmd
 local CMD = {}
+local function reload_agents(protocol, agents)
+    local app_agent_start = config.get("wlua_app_agent_start")
+    for agent_id,agent in pairs(agents) do
+        log.info("Try to close agent. protocol:", protocol, ", agent_id:", agent_id)
+        skynet.send(agent, "lua", "close")
 
-local env_list = {
-    "app_dir", "wlua_dir",
-    "luaservice", "lualoader", "lua_path", "lua_cpath", "cpath", "snax", 
-    "thread", "harbor", "bootstrap", "start", "daemon", "logger", "logservice",
-    "wlua_logpath", "wlua_auto_cutlog", "wlua_sighup_file",
-}
-local function dump_env()
-    log.debug("----- begin dump env -----")
-    for _, key in pairs(env_list) do
-        log.debug(key, "=", config.get(key))
+        local new_agent = skynet.newservice(app_agent_start, protocol, agent_id)
+        skynet.call(new_agent, "lua", "open", protocol, agent_id)
+        agents[agent_id] = new_agent
     end
-    log.debug("----- end dump env -----")
+end
+function CMD.reload()
+    local cache = require "skynet.codecache"
+    cache.clear()
+    for protocol, agents in pairs(app_agents) do
+        reload_agents(protocol, agents)
+    end
 end
 
 skynet.start(function()
+    skynet.register(".main")
     local debug_port = config.get("wlua_debug_port")
     if debug_port then
         skynet.newservice("debug_console", debug_port)
@@ -70,6 +75,6 @@ skynet.start(function()
     start("https")
 
     log.info("Hello wlua.")
-    dump_env()
+    config.dump_all_config()
 end)
 

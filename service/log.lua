@@ -16,10 +16,7 @@ local auto_cutlog = config.get("wlua_auto_cutlog")
 -- sighup commond
 local sighup_file = config.get("wlua_sighup_file")
 
-local logfile
-if daemon then
-    logfile = io.open(logpath, "a+")
-end
+local logfile = io.open(logpath, "a+")
 
 local function reopen_log()
     logfile:close()
@@ -60,11 +57,10 @@ skynet.register_protocol {
     dispatch = function(_, addr, str)
         local time = get_str_time()
         str = string.format("[%08x][%s] %s", addr, time, str)
-        if daemon then
-            write_log(logfile, str)
-        else
+        if not daemon then
             print(str)
         end
+        write_log(logfile, str)
     end
 }
 
@@ -82,6 +78,13 @@ end
 -- cmd for cut log
 function SIGHUP_CMD.cutlog()
     reopen_log()
+end
+
+-- cmd for reload
+function SIGHUP_CMD.reload()
+    log.warn("Begin reload.")
+    skynet.call(".main", "lua", "reload")
+    log.warn("End reload.")
 end
 
 local function get_sighup_cmd()
@@ -128,9 +131,8 @@ skynet.start(function()
         if not ok then
             if not daemon then
                 print(msg)
-            else
-                write_log(logfile, msg)
             end
+            write_log(logfile, msg)
         end
     end
 end)

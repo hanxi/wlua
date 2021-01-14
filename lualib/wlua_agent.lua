@@ -82,7 +82,7 @@ end
 
 local function close_socket(id, interface)
     socket.close(id)
-    if interface.close then
+    if interface and interface.close then
         interface.close()
     end
 end
@@ -133,6 +133,12 @@ function CMD.open(_protocol, _agent_id)
     opened = true
 end
 
+function CMD.close()
+    opened = false
+    -- TODO: add timer to exit
+    skynet.exit()
+end
+
 local M = {}
 function M.run()
     skynet.start(function()
@@ -145,6 +151,7 @@ function M.run()
                     end
                 else
                     log.error("Wlua agent unopened.")
+                    socket.close(...)
                 end
             else
                 local f = assert(CMD[cmd])
