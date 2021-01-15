@@ -27,10 +27,10 @@ local function start(protocol)
     local host_config_key = string.format("wlua_app_%s_host", protocol)
     local host = config.get(host_config_key)
     local balance = 1
-    local id = socket.listen(host, port)
+    local listen_id = socket.listen(host, port)
     log.info("Start web. host:", host, ",port:", port)
-    socket.start(id , function(_id, addr)
-        skynet.send(agents[balance], "lua", "socket", "request", _id)
+    socket.start(listen_id , function(id, addr)
+        skynet.send(agents[balance], "lua", "socket", "request", id, addr)
         balance = balance + 1
         if balance > #agents then
             balance = 1
@@ -66,7 +66,7 @@ skynet.start(function()
         skynet.newservice("debug_console", debug_port)
     end
 
-    skynet.dispatch("lua", function(session, source, cmd, subcmd, ...)
+    skynet.dispatch("lua", function(_, _, cmd, subcmd, ...)
         local f = assert(CMD[cmd])
         skynet.ret(skynet.pack(f(subcmd, ...)))
     end)

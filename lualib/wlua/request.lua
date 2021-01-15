@@ -1,12 +1,11 @@
 local httpd = require "http.httpd"
+local sockethelper = require "http.sockethelper"
 local util_json = require "util.json"
 local config = require "config"
 local urllib = require "http.url"
 local log = require "log"
 
 local sfind = string.find
-local pairs = pairs
-local type = type
 local setmetatable = setmetatable
 local parse_query = urllib.parse_query
 local parse_url = urllib.parse

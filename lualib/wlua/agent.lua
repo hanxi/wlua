@@ -2,7 +2,6 @@ local skynet = require "skynet.manager"
 local socket = require "skynet.socket"
 local httpd = require "http.httpd"
 local sockethelper = require "http.sockethelper"
-local urllib = require "http.url"
 local log = require "log"
 local request = require "wlua.request"
 
@@ -34,7 +33,7 @@ end
 
 local function _handle_request(req)
     log.debug("Handle requrest. url:", req.url, ",method:", req.method)
-    if method == "OPTIONS" then
+    if req.method == "OPTIONS" then
         response(req.id, req.interface.write, 204, '', resp_header)
         return
     end
@@ -61,7 +60,7 @@ local function handle_request(id, interface)
 end
 
 local SSLCTX_SERVER = nil
-local function gen_interface(protocol, id)
+local function gen_interface(id)
     if protocol == "http" then
         return {
             init = nil,
@@ -96,7 +95,7 @@ function SOCKET.request(id)
     socket.start(id)
 
     --log.info("start id:", id)
-    local interface = gen_interface(protocol, id)
+    local interface = gen_interface(id)
     if interface.init then
         interface.init()
     end
@@ -131,20 +130,24 @@ function CMD.close()
     skynet.exit()
 end
 
+local function dispatch_socket(subcmd, id, ...)
+    if opened then
+        local ok,err = xpcall(SOCKET[subcmd], traceback, id, ...)
+        if not ok then
+            log.error("Error dispatch socket. err:", err)
+        end
+    else
+        log.error("Wlua agent unopened.")
+        socket.close(id)
+    end
+end
+
 local M = {}
 function M.run()
     skynet.start(function()
         skynet.dispatch("lua", function (_, _, cmd, subcmd, ...)
             if cmd == "socket" then
-                if opened then
-                    local ok,err = xpcall(SOCKET[subcmd], traceback, ...)
-                    if not ok then
-                        log.error("Error dispatch socket. err:", err)
-                    end
-                else
-                    log.error("Wlua agent unopened.")
-                    socket.close(...)
-                end
+                dispatch_socket(subcmd, ...)
             else
                 local f = assert(CMD[cmd])
                 skynet.ret(skynet.pack(f(subcmd, ...)))
