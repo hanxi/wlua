@@ -1,13 +1,13 @@
 local skynet = require "skynet.manager"
 local socket = require "skynet.socket"
-local httpd = require "http.httpd"
 local sockethelper = require "http.sockethelper"
 local log = require "log"
-local request = require "wlua.request"
+local context = require "wlua.context"
 
 local traceback = debug.traceback
 local xpcall = xpcall
 
+local app
 local protocol
 local agent_id
 local opened = false
@@ -15,48 +15,10 @@ local opened = false
 local SOCKET = {}
 local CMD = {}
 
-local resp_header = {
-    ["Access-Control-Allow-Origin"] = "*",
-    ["Access-Control-Allow-Credentials"] = "true",
-    ["Access-Control-Allow-Methods"] = "*",
-    ["Access-Control-Allow-Headers"] = "*",
-}
-
-local function response(id, write, ...)
-    local ok, err = httpd.write_response(write, ...)
-    if not ok then
-        if err ~= sockethelper.socket_error then
-            log.warn("Error in response. fd:", id, ",err:", err)
-        end
-    end
-end
-
-local function _handle_request(req)
-    log.debug("Handle requrest. url:", req.url, ",method:", req.method)
-    if req.method == "OPTIONS" then
-        response(req.id, req.interface.write, 204, '', resp_header)
-        return
-    end
-
-    local msg = "hello world"
-    response(req.id, req.interface.write, 200, msg, resp_header)
-end
-
 local function handle_request(id, interface)
-    local req = request:new(id, interface)
-    if not req then
-        return
-    end
-
+    local ctx = context:new(app, id, interface)
+    ctx:next()
     -- TODO: access.log 远程主机ip 请求时间 method url code sendbyte
-    log.info("Request. url:", req.url, ", method:", req.method)
-
-    if req.code ~= 200 then
-        response(id, interface.write, req.code)
-        return
-    end
-
-    _handle_request(req)
 end
 
 local SSLCTX_SERVER = nil
@@ -143,7 +105,8 @@ local function dispatch_socket(subcmd, id, ...)
 end
 
 local M = {}
-function M.run()
+function M.run(_app)
+    app = _app
     skynet.start(function()
         skynet.dispatch("lua", function (_, _, cmd, subcmd, ...)
             if cmd == "socket" then
