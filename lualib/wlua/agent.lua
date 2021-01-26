@@ -2,7 +2,7 @@ local skynet = require "skynet.manager"
 local socket = require "skynet.socket"
 local sockethelper = require "http.sockethelper"
 local log = require "log"
-local context = require "wlua.context"
+local wlua_context = require "wlua.context"
 
 local traceback = debug.traceback
 local xpcall = xpcall
@@ -16,7 +16,7 @@ local SOCKET = {}
 local CMD = {}
 
 local function handle_request(id, interface)
-    local ctx = context:new(app, id, interface)
+    local ctx = wlua_context:new(app, id, interface)
     ctx:next()
     -- TODO: access.log 远程主机ip 请求时间 method url code sendbyte
 end
