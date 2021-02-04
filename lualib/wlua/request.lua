@@ -16,7 +16,7 @@ local max_request_body_size = config.get("wlua_max_request_body_size")
 local M = {}
 local mt = { __index = M }
 
--- new request: init args/params/body etc from http request
+-- new request: init args/body etc from http request
 function M:new(id, interface)
     local code, url, method, headers, body_raw = httpd.read_request(interface.read, max_request_body_size)
     if not code then
@@ -52,7 +52,6 @@ function M:new(id, interface)
         path = path, -- uri
         method = method,
         query = query,
-        params = {},
         body = body,
         body_raw = body_raw,
         url = url,
@@ -63,16 +62,7 @@ function M:new(id, interface)
 
         id = id,
         interface = interface,
-        found = false, -- 404 or not
     }, mt)
-end
-
-function M:is_found()
-    return self.found
-end
-
-function M:set_found(found)
-    self.found = found
 end
 
 return M

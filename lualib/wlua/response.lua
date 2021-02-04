@@ -12,7 +12,6 @@ function M:new(id, interface)
         resp_header = {}, -- TODO:
         status = 200,
     }
-    -- router = router:new()
     return setmetatable(instance, mt)
 end
 

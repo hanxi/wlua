@@ -18,13 +18,13 @@ end
 function M:calculate_absolute_path(relative_path)
     log.debug("calculate_absolute_path", self.base_path, relative_path)
     if self.base_path:sub(-1) == '/' then
-        if relative_path:sub(1) == '/' then
+        if relative_path:sub(1, 1) == '/' then
             return self.base_path .. relative_path:sub(2)
         end
         return self.base_path .. relative_path
     end
 
-    if relative_path:sub(1) == '/' then
+    if relative_path:sub(1, 1) == '/' then
         return self.base_path .. relative_path
     end
     return sformat("%s/%s", self.base_path, relative_path)
@@ -60,7 +60,8 @@ end
 -- M:get(path, handle1, handle2, ...)
 -- M:post(path, handle1, handle2, ...)
 for method,_ in pairs(wlua_methods) do
-	M[method] = function (self, path, ...)
+    local l_name = string.lower(method)
+	M[l_name] = function (self, path, ...)
 		self.handle(self, method, path, ...)
 	end
 end

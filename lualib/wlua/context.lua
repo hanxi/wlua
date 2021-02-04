@@ -8,20 +8,31 @@ local mt = { __index = M }
 function M:new(app, id, interface)
     local req = wlua_request:new(id, interface)
     local res = wlua_response:new(id, interface)
-    log.debug("wlua new. method:", req.method, ",path:", req.path)
 
-    app.router:execute(req.method, req.path)
+    local handlers, params = app.router:match(req.path, req.method)
+    log.debug("wlua context new. path:", req.path, ", method:", req.method, handlers, params)
+
+    app.router:dump()
+
+    -- TODO: 处理 404
+    local found = false
+    if handlers then
+        found = true
+    end
     local instance = {
         app = app,
         req = req,
         res = res,
         index = 0,
-        handlers = app.tmp_handlers or {},
+        handlers = handlers or {},
+        params = params,
+        found = found, -- 404 or not
     }
     return setmetatable(instance, mt)
 end
 
 function M:next()
+    log.debug("handlers len:", #self.handlers)
     for i=self.index + 1, #self.handlers do
         self.handlers[i](self)
     end

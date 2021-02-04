@@ -16,6 +16,7 @@ local SOCKET = {}
 local CMD = {}
 
 local function handle_request(id, interface)
+    log.debug("handle_request. app:", app, ", route:", app.router)
     local ctx = wlua_context:new(app, id, interface)
     ctx:next()
     -- TODO: access.log 远程主机ip 请求时间 method url code sendbyte
