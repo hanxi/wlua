@@ -1,6 +1,7 @@
 local httpd = require "http.httpd"
 local sockethelper = require "http.sockethelper"
 local log = require "log"
+local util_json = require "util.json"
 
 local M = {}
 local mt = { __index = M }
@@ -18,6 +19,12 @@ end
 
 function M:send(text, status)
     self.status = status or self.status
+    self:write(text)
+end
+
+function M:send_json(lua_table)
+    local text = util_json.encode(lua_table)
+    self.resp_header["Content-Type"] = "application/json"
     self:write(text)
 end
 

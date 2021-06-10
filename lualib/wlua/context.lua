@@ -43,4 +43,9 @@ function M:send(...)
     self.res:send(...)
 end
 
+-- M:send_json({AA="BB"})
+function M:send_json(...)
+    self.res:send_json(...)
+end
+
 return M
