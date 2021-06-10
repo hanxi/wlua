@@ -14,7 +14,6 @@ function M:new(app, id, interface)
 
     app.router:dump()
 
-    -- TODO: 处理 404
     local found = false
     if handlers then
         found = true
@@ -26,7 +25,7 @@ function M:new(app, id, interface)
         index = 0,
         handlers = handlers or {},
         params = params,
-        found = found, -- 404 or not
+        found = found,
     }
     return setmetatable(instance, mt)
 end

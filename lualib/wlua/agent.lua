@@ -15,10 +15,27 @@ local opened = false
 local SOCKET = {}
 local CMD = {}
 
+local default_404_body = "404 page not found"
+
 local function handle_request(id, interface)
     log.debug("handle_request. app:", app, ", route:", app.router)
-    local ctx = wlua_context:new(app, id, interface)
-    ctx:next()
+    local c = wlua_context:new(app, id, interface)
+    if c.found then
+        c:next()
+        return
+    end
+
+    c.handlers = app.all_no_route
+    c:next()
+
+    local res = c.res
+    if res.written then
+        return
+    end
+
+    res.resp_header["Content-Type"] = "text/plain"
+    res:send(default_404_body)
+
     -- TODO: access.log 远程主机ip 请求时间 method url code sendbyte
 end
 

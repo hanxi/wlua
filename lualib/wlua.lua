@@ -1,4 +1,3 @@
---local config = require "config"
 local wlua_agent = require "wlua.agent"
 local wlua_methods = require "wlua.methods"
 local wlua_routergroup = require "wlua.routergroup"
@@ -11,10 +10,21 @@ local mt = { __index = M }
 function M:new()
     local instance = {
         router = r3.new(),
+        no_route = {},
+        all_no_route = {},
     }
     log.debug("wlua new.")
     instance.routergroup = wlua_routergroup:new(instance, '/')
     return setmetatable(instance, mt)
+end
+
+function M:set_no_route(...)
+    self.no_route = {...}
+    self:reset_no_route()
+end
+
+function M:reset_no_route()
+    self.all_no_route = self.no_route
 end
 
 function M:run()
@@ -30,6 +40,7 @@ end
 -- M:use(middleware1, middleware2, ...)
 function M:use(...)
     self.routergroup:use(...)
+    self:reset_no_route()
 end
 
 -- M:get(path, handle1, handle2, ...)
