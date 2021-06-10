@@ -43,6 +43,11 @@ function M:use(...)
     self:reset_no_route()
 end
 
+-- M:group("v1", ...)
+function M:group(relative_path, ...)
+    return self.routergroup:group(relative_path, ...)
+end
+
 -- M:get(path, handle1, handle2, ...)
 -- M:post(path, handle1, handle2, ...)
 for method,_ in pairs(wlua_methods) do

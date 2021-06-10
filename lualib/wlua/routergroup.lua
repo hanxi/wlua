@@ -48,6 +48,17 @@ function M:handle(method, relative_path, ...)
     self.app:add_route(method, absolute_path, handlers)
 end
 
+-- M:group("v1", ...)
+function M:group(relative_path, ...)
+    local absolute_path = self:calculate_absolute_path(relative_path)
+    local routergroup = M:new(self.app, absolute_path)
+    local handlers = routergroup:combine_handlers({...})
+    for method,_ in pairs(wlua_methods) do
+        self.app:add_route(method, absolute_path, handlers)
+    end
+    return routergroup
+end
+
 -- M:use(middleware1, middleware2, ...)
 function M:use(...)
     local i = #self.handlers
