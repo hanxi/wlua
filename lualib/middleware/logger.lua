@@ -2,7 +2,7 @@ local skynet = require "skynet"
 local log = require "log"
 
 local function default_log_formatter(param)
-	return string.format("[WLUA] %s | %3d | %s | %15s | %-7s %s",
+	return string.format("[WLUA] %s | %3d | %.3f | %15s | %-7s %s",
         os.date("%Y/%m/%d - %H:%M:%S", param.timestamp),
 		param.status,
 		param.latency,
