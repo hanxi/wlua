@@ -5,7 +5,7 @@ local wlua_response = require "wlua.response"
 local M = {}
 local mt = { __index = M }
 
-function M:new(app, id, interface)
+function M:new(app, id, interface, addr)
     local req = wlua_request:new(id, interface)
     local res = wlua_response:new(id, interface)
 
@@ -26,16 +26,17 @@ function M:new(app, id, interface)
         handlers = handlers or {},
         params = params,
         found = found,
+        addr = addr,
     }
     return setmetatable(instance, mt)
 end
 
 function M:next()
-    log.debug("handlers len:", #self.handlers)
-    for i=self.index + 1, #self.handlers do
-        self.handlers[i](self)
+    self.index = self.index + 1
+    while self.index <= #self.handlers do
+        self.handlers[self.index](self)
+        self.index = self.index + 1
     end
-    self.index = #self.handlers
 end
 
 -- M:send(text, status)

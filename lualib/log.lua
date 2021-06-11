@@ -32,4 +32,8 @@ function M.error(...)
     skynet.error("[ERROR]", traceback())
 end
 
+function M.log(...)
+    skynet.error(...)
+end
+
 return M

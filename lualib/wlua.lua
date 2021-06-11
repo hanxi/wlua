@@ -3,6 +3,7 @@ local wlua_methods = require "wlua.methods"
 local wlua_routergroup = require "wlua.routergroup"
 local log = require "log"
 local r3 = require "r3"
+local logger = require "middleware.logger"
 
 local M = { VERSION = '0.01' }
 local mt = { __index = M }
@@ -18,13 +19,19 @@ function M:new()
     return setmetatable(instance, mt)
 end
 
+function M:default()
+    local app = M:new()
+    app:use(logger())
+    return app
+end
+
 function M:set_no_route(...)
     self.no_route = {...}
     self:reset_no_route()
 end
 
 function M:reset_no_route()
-    self.all_no_route = self.no_route
+    self.all_no_route = self.routergroup:combine_handlers(self.no_route)
 end
 
 function M:run()

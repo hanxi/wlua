@@ -17,18 +17,19 @@ local CMD = {}
 
 local default_404_body = "404 page not found"
 
-local function handle_request(id, interface)
-    log.debug("handle_request. app:", app, ", route:", app.router)
-    local c = wlua_context:new(app, id, interface)
+local function handle_request(id, interface, addr)
+    log.debug("handle_request. app:", app, ", route:", app.router, ", addr:", addr)
+    local c = wlua_context:new(app, id, interface, addr)
     if c.found then
         c:next()
         return
     end
 
     c.handlers = app.all_no_route
+    local res = c.res
+    res.status = 404
     c:next()
 
-    local res = c.res
     if res.written then
         return
     end
@@ -71,7 +72,7 @@ local function gen_interface(id)
     end
 end
 
-function SOCKET.request(id)
+function SOCKET.request(id, addr)
     socket.start(id)
 
     --log.info("start id:", id)
@@ -80,9 +81,9 @@ function SOCKET.request(id)
         interface.init()
     end
 
-    local ok,err = xpcall(handle_request, traceback, id, interface)
+    local ok,err = xpcall(handle_request, traceback, id, interface, addr)
     if not ok then
-        log.error("Error handle_request. id:", id, ", err:", err)
+        log.error("Error handle_request. id:", id, ",addr:", addr, ", err:", err)
     end
 
     socket.close(id)
