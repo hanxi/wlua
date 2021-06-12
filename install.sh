@@ -1,22 +1,22 @@
 set -x
 
-BIN=$1
-INSTALLDIR=$2
-V_INSTALLDIR=${INSTALLDIR//\//\\\/} 
+WLUA_BIN=$1
+WLUA_HOME=$2
+V_WLUA_HOME=${WLUA_HOME//\//\\\/} 
 INSTALL=/usr/bin/install
-${INSTALL} -d ${INSTALLDIR}
-cp -rf conf ${INSTALLDIR}/conf
-cp -rf demo ${INSTALLDIR}/demo
-${INSTALL} -p -D demo/.env ${INSTALLDIR}/demo/.env
-cp -rf luaclib ${INSTALLDIR}/luaclib
-cp -rf lualib ${INSTALLDIR}/lualib
-cp -rf service ${INSTALLDIR}/service
-${INSTALL} -d ${INSTALLDIR}/skynet
-cp -rf skynet/cservice ${INSTALLDIR}/skynet/cservice
-cp -rf skynet/luaclib ${INSTALLDIR}/skynet/luaclib
-cp -rf skynet/lualib ${INSTALLDIR}/skynet/lualib
-cp -rf skynet/service ${INSTALLDIR}/skynet/service
-${INSTALL} -p -D -m 0755 skynet/skynet ${INSTALLDIR}/skynet/skynet
-${INSTALL} -p -D -m 0755 wlua ${INSTALLDIR}/wlua
-sed -i 's/REPLACE_INSTALL_PATH/'$V_INSTALLDIR'/g' ${INSTALLDIR}/wlua
-ln -sf ${INSTALLDIR}/wlua ${BIN}
+${INSTALL} -d ${WLUA_HOME}
+cp -rf conf ${WLUA_HOME}/conf
+cp -rf demo ${WLUA_HOME}/demo
+${INSTALL} -p -D demo/.env ${WLUA_HOME}/demo/.env
+cp -rf luaclib ${WLUA_HOME}/luaclib
+cp -rf lualib ${WLUA_HOME}/lualib
+cp -rf service ${WLUA_HOME}/service
+${INSTALL} -d ${WLUA_HOME}/skynet
+cp -rf skynet/cservice ${WLUA_HOME}/skynet/cservice
+cp -rf skynet/luaclib ${WLUA_HOME}/skynet/luaclib
+cp -rf skynet/lualib ${WLUA_HOME}/skynet/lualib
+cp -rf skynet/service ${WLUA_HOME}/skynet/service
+${INSTALL} -p -D -m 0755 skynet/skynet ${WLUA_HOME}/skynet/skynet
+${INSTALL} -p -D -m 0755 wlua ${WLUA_HOME}/wlua
+sed -i 's/REPLACE_INSTALL_PATH/'$V_WLUA_HOME'/g' ${WLUA_HOME}/wlua
+ln -sf ${WLUA_HOME}/wlua ${WLUA_BIN}

@@ -39,16 +39,31 @@ function create_new_app()
 function start_server()
 {
     echo "start server"
+    if [ ! -f start.sh ]; then
+        echo "start.sh file not in this directory"
+        exit 1
+    fi
+    sh start.sh
 }
 
 function stop_server()
 {
     echo "stop server"
+    if [ ! -f stop.sh ]; then
+        echo "stop.sh file not in this directory"
+        exit 1
+    fi
+    sh stop.sh
 }
 
 function reload_server()
 {
     echo "reload server"
+    if [ ! -f reload.sh ]; then
+        echo "reload.sh file not in this directory"
+        exit 1
+    fi
+    sh reload.sh
 }
 
 function print_version()

@@ -16,11 +16,11 @@ cleanall: clean
 check:
 	luacheck `find . -name '*.lua' '!' -path './skynet/*' '!' -path './3rd/*' | xargs` --ignore 212/self
 
-BIN := /usr/local/bin/wlua
-INSTALLDIR := /usr/local/share/wlua
+WLUA_BIN := /usr/local/bin/wlua
+WLUA_HOME := /usr/local/wlua
 install:
-	sh install.sh $(BIN) $(INSTALLDIR)
+	sh install.sh $(WLUA_BIN) $(WLUA_HOME)
 
 uninstall:
-	rm -f $(BIN)
-	rm -rf $(INSTALLDIR)
+	rm -f $(WLUA_BIN)
+	rm -rf $(WLUA_HOME)
