@@ -73,3 +73,7 @@ Visit <http://localhost:8081> . Or use `curl` test:
 curl -i http://localhost:8081
 ```
 
+More test in demo: <https://github.com/hanxi/wlua_demo>
+
+More page in blog: <http://blog.hanxi.cc/p/74/>
+
