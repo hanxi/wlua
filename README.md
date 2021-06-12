@@ -67,5 +67,9 @@ $ cd wlua_demo
 $ wlua start
 ```
 
-Visit <http://localhost:8081> .
+Visit <http://localhost:8081> . Or use `curl` test:
+
+```bash
+curl -i http://localhost:8081
+```
 
