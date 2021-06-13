@@ -14,6 +14,23 @@ app:run()
 
 ## Installation
 
+### Dependent library
+
+Build [libr3](https://github.com/hanxi/lua-r3) need this library:
+
+```bash
+# Ubuntu
+sudo apt-get install check libpcre3 libpcre3-dev build-essential libtool \
+    automake autoconf pkg-config
+# CentOS 7
+sodu yum install gcc gcc-c++ git make automake autoconf pcre pcre-devel \
+    libtool pkgconfig
+```
+
+Build [skynet](https://github.com/cloudwu/skynet/wiki/Build) need `gcc 4.9+` .
+
+Then install use this commond:
+
 ```bash
 git clone https://github.com/hanxi/wlua
 cd wlua

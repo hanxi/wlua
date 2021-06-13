@@ -16,7 +16,7 @@ local function start(protocol)
         return
     end
 
-	local app_agent_cnt = config.get("wlua_app_agent_cnt")
+    local app_agent_cnt = config.get("wlua_app_agent_cnt")
     local app_agent_start = config.get("wlua_app_agent_start")
     local agents = app_agents[protocol]
     for agent_id = 1,app_agent_cnt do
@@ -72,7 +72,12 @@ skynet.start(function()
     end)
 
     start("http")
-    start("https")
+
+    if not pcall(require, "ltls.c") then
+        log.error("No ltls module, https is not supported")
+    else
+        start("https")
+    end
 
     log.info("Hello wlua.")
     config.dump_all_config()

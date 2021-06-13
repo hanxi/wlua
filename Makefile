@@ -9,7 +9,7 @@ all: 3rd check
 
 skynet:
 	git submodule update --init
-	cd skynet && $(MAKE) linux
+	cd skynet && $(MAKE) linux TLS_MODULE=ltls
 
 clean:
 	rm -f luaclib/*.so
@@ -25,7 +25,7 @@ check:
 WLUA_BIN := /usr/local/bin/wlua
 WLUA_HOME := /usr/local/wlua
 install: skynet 3rd
-	sh install.sh $(WLUA_BIN) $(WLUA_HOME)
+	bash install.sh $(WLUA_BIN) $(WLUA_HOME)
 
 uninstall:
 	rm -f $(WLUA_BIN)

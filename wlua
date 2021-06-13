@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 version=0.01
 INSTALL_PATH=REPLACE_INSTALL_PATH
