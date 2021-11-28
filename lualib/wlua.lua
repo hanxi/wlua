@@ -59,9 +59,9 @@ end
 -- M:post(path, handle1, handle2, ...)
 for method,_ in pairs(wlua_methods) do
     local l_name = string.lower(method)
-	M[l_name] = function (self, path, ...)
-		self.routergroup.handle(self.routergroup, method, path, ...)
-	end
+    M[l_name] = function (self, path, ...)
+        self.routergroup.handle(self.routergroup, method, path, ...)
+    end
 end
 
 return M
