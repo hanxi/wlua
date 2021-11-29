@@ -30,7 +30,6 @@ return function (conf)
         local path = c.req.path
         local uri = c.req.origin_uri
 
-        out("fuck", start_time, path, uri)
         -- Process request
         c:next()
 
