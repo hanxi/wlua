@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=0.01
+version=0.0.1
 INSTALL_PATH=REPLACE_INSTALL_PATH
 
 function usage()
