@@ -40,7 +40,7 @@ function M:run()
 end
 
 function M:add_route(method, absolute_path, handlers)
-    log.debug("add_route:", method, absolute_path, handlers)
+    log.debug("add_route:", method, absolute_path, #handlers)
     self.router:insert(method, absolute_path, handlers)
 end
 

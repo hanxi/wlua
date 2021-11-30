@@ -57,7 +57,7 @@ end
 function M:group(relative_path, ...)
     local absolute_path = self:calculate_absolute_path(relative_path)
     local routergroup = M:new(self.app, absolute_path)
-    routergroup.handlers = {...}
+    routergroup.handlers = self:combine_handlers({...})
     return routergroup
 end
 

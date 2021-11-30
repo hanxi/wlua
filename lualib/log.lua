@@ -1,5 +1,6 @@
 local skynet = require "skynet"
 local config = require "config"
+local util_table = require "util.table"
 local traceback = debug.traceback
 
 local M = {}
@@ -14,7 +15,15 @@ local loglevel = levels[level]
 
 function M.debug(...)
     if levels.debug < loglevel then return end
-    skynet.error("[DEBUG]", ...)
+    local tbl = {}
+    for i,v in pairs({...}) do
+        if type(v) == "table" then
+            tbl[i] = util_table.tostring(v)
+        else
+            tbl[i] = tostring(v)
+        end
+    end
+    skynet.error("[DEBUG]", table.concat(tbl, " "))
 end
 
 function M.info(...)

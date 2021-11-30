@@ -28,6 +28,8 @@ function M:new(id, interface)
         return
     end
 
+    log.debug("req. url:", url, ", method:", method, ", headers:", headers)
+
     local body = body_raw
     local content_type = headers['content-type']
     -- the post request have Content-Type header set

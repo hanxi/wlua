@@ -60,11 +60,16 @@ function M:file(filepath)
     local mimetype = ret[2]
     if not content then
         self.found = false
+        self.res.status = 404
         log.debug("file not exist:", filepath)
         return
     end
     log.debug("file. filepath:", filepath, ", mimetype:", mimetype)
     self:send(content, 200, mimetype)
+end
+
+function M:set_res_header(header_key, header_value)
+    self.res:set_header(header_key, header_value)
 end
 
 return M

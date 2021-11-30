@@ -17,8 +17,16 @@ function M:new(id, interface)
     return setmetatable(instance, mt)
 end
 
+function M:get_header(header_key)
+    return self.resp_header[header_key]
+end
+
+function M:set_header(header_key, header_value)
+    self.resp_header[header_key] = header_value
+end
+
 function M:set_content_type(content_type)
-    self.resp_header["Content-Type"] = content_type
+    self:set_header("Content-Type", content_type)
 end
 
 function M:send(text, status, content_type)
@@ -36,6 +44,7 @@ end
 
 function M:write(data)
     self.written = true
+    log.debug("write. resp_header:", self.resp_header)
     local ok, err = httpd.write_response(self.interface.write, self.status, data, self.resp_header)
     if not ok then
         if err ~= sockethelper.socket_error then
