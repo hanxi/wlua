@@ -7,6 +7,10 @@ local mt = { __index = M }
 
 function M:new(app, id, interface, addr)
     local req = wlua_request:new(id, interface)
+    if not req then
+        return
+    end
+
     local res = wlua_response:new(id, interface)
 
     local handlers, params = app.router:match(req.path, req.method)

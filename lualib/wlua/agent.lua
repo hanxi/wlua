@@ -18,8 +18,13 @@ local CMD = {}
 local default_404_body = "404 page not found"
 
 local function handle_request(id, interface, addr)
-    log.debug("handle_request. app:", app, ", route:", app.router, ", addr:", addr)
+    log.debug("handle_request. app:", app, ", route:", app.router, ", addr:", addr, ", id:", id)
     local c = wlua_context:new(app, id, interface, addr)
+    if not c then
+        log.warn("handle_request failed. addr:", addr, ", id:", id)
+        return
+    end
+
     if c.found then
         c:next()
         return
