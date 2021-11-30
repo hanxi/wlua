@@ -1,22 +1,31 @@
 -- skynet.error output
+local logfile
+local function write_log(file, str)
+    file:write(str, "\n")
+    file:flush()
+end
+
+-- because log service error will not write right. use xpcall for debug log service
+-- if no err_msg in log/wlua.log then set `daemon = nil` in `conf/wlua.conf` .
+local ok, err_msg = xpcall(function()
+
 local skynet = require "skynet.manager"
 local config = require "config"
+
+-- is daemon
+local daemon = config.get("daemon")
+-- log config
+local logpath = config.get("wlua_logpath")
+logfile = io.open(logpath, "a+")
+local auto_cutlog = config.get("wlua_auto_cutlog", true)
+-- sighup commond
+local sighup_file = config.get("wlua_sighup_file")
+
+
 local util_date = require "util.date"
 local util_file = require "util.file"
 local util_string = require "util.string"
 local log = require "log"
-
--- is daemon
-local daemon = config.get("daemon")
-
--- log config
-local logpath = config.get("wlua_logpath")
-local auto_cutlog = config.get("wlua_auto_cutlog")
-
--- sighup commond
-local sighup_file = config.get("wlua_sighup_file")
-
-local logfile = io.open(logpath, "a+")
 
 local function reopen_log()
     logfile:close()
@@ -43,11 +52,6 @@ local function get_str_time()
         last_str_time = os.date("%Y-%m-%d %H:%M:%S", cur)
     end
     return last_str_time
-end
-
-local function write_log(file, str)
-    file:write(str, "\n")
-    file:flush()
 end
 
 skynet.register_protocol {
@@ -136,3 +140,9 @@ skynet.start(function()
         end
     end
 end)
+
+end, debug.traceback)
+if not ok then
+    print(err_msg)
+    write_log(logfile, err_msg)
+end

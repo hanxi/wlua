@@ -17,14 +17,20 @@ function M:new(id, interface)
     return setmetatable(instance, mt)
 end
 
-function M:send(text, status)
+function M:set_content_type(content_type)
+    self.resp_header["Content-Type"] = content_type
+end
+
+function M:send(text, status, content_type)
     self.status = status or self.status
+    content_type = content_type or "text/plain"
+    self:set_content_type(content_type)
     self:write(text)
 end
 
 function M:send_json(lua_table)
     local text = util_json.encode(lua_table)
-    self.resp_header["Content-Type"] = "application/json"
+    self:set_content_type("application/json")
     self:write(text)
 end
 

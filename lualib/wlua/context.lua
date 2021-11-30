@@ -1,6 +1,7 @@
 local log = require "log"
 local wlua_request = require "wlua.request"
 local wlua_response = require "wlua.response"
+local util_file = require "util.file"
 
 local M = {}
 local mt = { __index = M }
@@ -43,7 +44,7 @@ function M:next()
     end
 end
 
--- M:send(text, status)
+-- M:send(text, status, content_type)
 function M:send(...)
     self.res:send(...)
 end
@@ -51,6 +52,19 @@ end
 -- M:send_json({AA="BB"})
 function M:send_json(...)
     self.res:send_json(...)
+end
+
+function M:file(filepath)
+    local ret = util_file.static_file[filepath]
+    local content = ret[1]
+    local mimetype = ret[2]
+    if not content then
+        self.found = false
+        log.debug("file not exist:", filepath)
+        return
+    end
+    log.debug("file. filepath:", filepath, ", mimetype:", mimetype)
+    self:send(content, 200, mimetype)
 end
 
 return M

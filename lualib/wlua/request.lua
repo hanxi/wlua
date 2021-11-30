@@ -11,7 +11,7 @@ local parse_query = urllib.parse_query
 local parse_url = urllib.parse
 
 -- limit request body size
-local max_request_body_size = config.get("wlua_max_request_body_size")
+local max_request_body_size = config.get("wlua_max_request_body_size", 1024 * 1024)
 
 local M = {}
 local mt = { __index = M }

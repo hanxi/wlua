@@ -39,8 +39,7 @@ local function handle_request(id, interface, addr)
         return
     end
 
-    res.resp_header["Content-Type"] = "text/plain"
-    res:send(default_404_body)
+    res:send(default_404_body, 404, "text/plain")
 
     -- TODO: access.log 远程主机ip 请求时间 method url code sendbyte
 end

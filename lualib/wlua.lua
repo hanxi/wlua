@@ -60,8 +60,18 @@ end
 for method,_ in pairs(wlua_methods) do
     local l_name = string.lower(method)
     M[l_name] = function (self, path, ...)
-        self.routergroup.handle(self.routergroup, method, path, ...)
+        self.routergroup:handle(method, path, ...)
     end
+end
+
+-- M:static_file("favicon.ico", "./favicon.ico")
+function M:static_file(relative_path, filepath)
+    self.routergroup:static_file(relative_path, filepath)
+end
+
+-- M:static_dir("/static", "./")
+function M:static_dir(relative_path, static_path)
+    self.routergroup:static_dir(relative_path, static_path)
 end
 
 return M

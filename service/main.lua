@@ -16,8 +16,8 @@ local function start(protocol)
         return
     end
 
-    local app_agent_cnt = config.get("wlua_app_agent_cnt")
-    local app_agent_start = config.get("wlua_app_agent_start")
+    local app_agent_cnt = config.get("wlua_app_agent_cnt", 3)
+    local app_agent_start = config.get("wlua_app_agent_start", "app/main")
     local agents = app_agents[protocol]
     for agent_id = 1,app_agent_cnt do
         agents[agent_id] = skynet.newservice(app_agent_start, protocol, agent_id)
@@ -25,7 +25,7 @@ local function start(protocol)
     end
 
     local host_config_key = string.format("wlua_app_%s_host", protocol)
-    local host = config.get(host_config_key)
+    local host = config.get(host_config_key, "0.0.0.0")
     local balance = 1
     local listen_id = socket.listen(host, port)
     log.info("Start web. host:", host, ",port:", port)
@@ -41,7 +41,7 @@ end
 -- other skynet cmd
 local CMD = {}
 local function reload_agents(protocol, agents)
-    local app_agent_start = config.get("wlua_app_agent_start")
+    local app_agent_start = config.get("wlua_app_agent_start", "app/main")
     for agent_id,agent in pairs(agents) do
         log.info("Try to close agent. protocol:", protocol, ", agent_id:", agent_id)
         skynet.send(agent, "lua", "close")

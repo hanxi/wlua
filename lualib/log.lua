@@ -9,7 +9,8 @@ local levels = {
     warn = 3,
     error = 4,
 }
-local loglevel = levels[config.get("wlua_loglevel")] or 1
+local level = config.get("wlua_loglevel", "debug")
+local loglevel = levels[level]
 
 function M.debug(...)
     if levels.debug < loglevel then return end

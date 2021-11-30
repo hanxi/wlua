@@ -5,14 +5,14 @@ local M = {}
 local conf = {}
 local config_result
 
-function M.get(key)
+function M.get(key, default)
     if conf[key] ~= nil then
         return conf[key]
     end
 
     local value = config_result[key]
     if value == nil then
-        return
+        return default
     end
 
     local tmp = tonumber(value)
