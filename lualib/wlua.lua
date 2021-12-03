@@ -10,7 +10,7 @@ local mt = { __index = M }
 
 function M:new()
     local instance = {
-        router = r3.new(),
+        router = r3:new(),
         no_route = {},
         all_no_route = {},
     }
