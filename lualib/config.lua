@@ -30,10 +30,19 @@ function M.get(key, default)
     return conf[key]
 end
 
+local log
 function M.get_tbl(key)
     local s = M.get(key)
     if type(s) == "string" then
-        s = load("return " .. s)()
+        if not log then
+            log = require "log"
+        end
+        log.debug("try get_tbl. key:", key)
+        local f, err = load("return " .. s)
+        if not f then
+            log.error("get_tbl failed. key:", key, ", err:", err, ", s:", s)
+        end
+        s = f()
         conf[key] = s
     end
     return s

@@ -38,6 +38,7 @@ end
 
 function M:send_json(lua_table)
     local text = util_json.encode(lua_table)
+    log.debug("send_json:", text)
     self:set_content_type("application/json")
     self:write(text)
 end
