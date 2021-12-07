@@ -15,7 +15,7 @@ function M:new(app, id, interface, addr)
     local res = wlua_response:new(id, interface)
 
     local handlers, params = app.router:match(req.path, req.method)
-    log.debug("wlua context new. path:", req.path, ", method:", req.method, handlers, params)
+    log.debug("wlua context new. path:", req.path, ", method:", req.method, ", params:", params)
 
     app.router:dump()
 
