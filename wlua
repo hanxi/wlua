@@ -66,6 +66,15 @@ function reload_server()
     sh reload.sh
 }
 
+function status_server()
+{
+    if [ ! -f status.sh ]; then
+        echo "status.sh file not in this directory"
+        exit 1
+    fi
+    sh status.sh
+}
+
 function print_version()
 {
     echo ${version}
@@ -83,6 +92,9 @@ case $1 in
         ;;
     reload)
         reload_server
+        ;;
+    status)
+        status_server
         ;;
     version)
         print_version
