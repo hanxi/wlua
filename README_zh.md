@@ -1,4 +1,8 @@
-# 介绍
+# wlua
+
+[![license](https://img.shields.io/github/license/sumory/lor.svg)](https://github.com/hanxi/wlua/blob/master/LICENSE)
+
+<a href="./README_zh.md" style="font-size:13px">中文</a> <a href="./README.md" style="font-size:13px">English</a>
 
 ## wlua 是什么
 
