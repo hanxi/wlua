@@ -91,7 +91,6 @@ case $1 in
         usage
         ;;
     *)
-        echo "Command Not Found"
         usage
         exit 1
         ;;
