@@ -149,4 +149,5 @@ use skynet service_provider create uniqservice
 [wlua-demo]: https://github.com/hanxi/wlua-demo
 [vue-admin-template]: https://github.com/PanJiaChen/vue-admin-template
 [skynet-admin]: https://github.com/hanxi/skynet-admin
+[libr3]: https://github.com/hanxi/lua-r3
 
