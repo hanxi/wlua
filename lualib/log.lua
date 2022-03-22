@@ -13,6 +13,11 @@ local levels = {
 local level = config.get("wlua_loglevel", "debug")
 local loglevel = levels[level]
 
+function M.is_debug()
+    if levels.debug < loglevel then return end
+    return true
+end
+
 function M.debug(...)
     if levels.debug < loglevel then return end
     local tbl = {}

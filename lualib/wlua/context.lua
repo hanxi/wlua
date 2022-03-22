@@ -17,7 +17,9 @@ function M:new(app, id, interface, addr)
     local handlers, params = app.router:match(req.path, req.method)
     log.debug("wlua context new. path:", req.path, ", method:", req.method, ", params:", params)
 
-    app.router:dump()
+    if log.is_debug() then
+        app.router:dump()
+    end
 
     local found = false
     if handlers then
