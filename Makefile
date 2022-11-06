@@ -5,7 +5,7 @@ all: 3rd check
 3rd: skynet
 	git submodule update --init
 	cd 3rd/lua-cjson && $(MAKE) install LUA_INCLUDE_DIR=../../skynet/3rd/lua DESTDIR=../.. LUA_CMODULE_DIR=./luaclib CC='$(CC) -std=gnu99'
-	cd 3rd/lua-r3 && $(MAKE) LUA_INCLUDE_DIR=../../skynet/3rd/lua && cp r3.lua ../../lualib/r3.lua && cp r3.so ../../luaclib/r3.so
+	cd 3rd/lua-rax && $(MAKE) LUA_INCLUDE_DIR=../../skynet/3rd/lua && cp rax.so ../../luaclib/rax.so && cp rax.lua ../../lualib/rax.lua
 
 skynet:
 	git submodule update --init
@@ -16,7 +16,7 @@ clean:
 
 cleanall: clean
 	cd 3rd/lua-cjson && make clean
-	cd 3rd/lua-r3 && make clean
+	cd 3rd/lua-rax && make clean
 	cd skynet && make cleanall
 
 check:

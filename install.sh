@@ -2,7 +2,7 @@ set -x
 
 WLUA_BIN=$1
 WLUA_HOME=$2
-V_WLUA_HOME=${WLUA_HOME//\//\\\/} 
+V_WLUA_HOME=${WLUA_HOME//\//\\\/}
 INSTALL=/usr/bin/install
 rm -rf ${WLUA_HOME}
 ${INSTALL} -d ${WLUA_HOME}

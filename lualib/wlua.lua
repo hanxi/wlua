@@ -2,7 +2,7 @@ local wlua_agent = require "wlua.agent"
 local wlua_methods = require "wlua.methods"
 local wlua_routergroup = require "wlua.routergroup"
 local log = require "log"
-local r3 = require "r3"
+local rax = require "rax"
 local logger = require "middleware.logger"
 
 local M = { VERSION = '0.0.1' }
@@ -10,7 +10,7 @@ local mt = { __index = M }
 
 function M:new()
     local instance = {
-        router = r3:new(),
+        router = rax:new(),
         no_route = {},
         all_no_route = {},
     }

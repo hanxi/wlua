@@ -79,7 +79,7 @@ function M:static_dir(relative_path, static_path)
         local fpath = util_file.path_join(static_path, c.params.filepath)
         c:file(fpath)
     end
-    local url_pattern = util_file.path_join(relative_path, "{filepath:.*}")
+    local url_pattern = util_file.path_join(relative_path, "*filepath")
     self:get(url_pattern, static_dir_handler)
     self:head(url_pattern, static_dir_handler)
 end

@@ -30,18 +30,7 @@ app:run()
 
 ## 安装
 
-### 依赖库
-
-编译 [libr3] 需要下面这些库:
-
-```bash
-# Ubuntu
-sudo apt-get install check libpcre3 libpcre3-dev build-essential libtool \
-    automake autoconf pkg-config
-# CentOS 7
-sodu yum install gcc gcc-c++ git make automake autoconf pcre pcre-devel \
-    libtool pkgconfig
-```
+### 依赖
 
 编译 [skynet] 需要 gcc 4.9+ 版本.
 
@@ -59,6 +48,8 @@ sudo make install
 make install WLUA_HOME=/usr/local/wlua WLUA_BIN=/usr/local/bin/wlua
 ```
 
+所以需要 `/usr/local/bin` 目录在 `$PATH` 路径里。
+
 ## 快速开始
 
 开始使用 wlua 的一种快速方法是利用可执行的 cli 工具 wlua 来生成脚手架应用程序。
@@ -67,7 +58,7 @@ make install WLUA_HOME=/usr/local/wlua WLUA_BIN=/usr/local/bin/wlua
 
 ```txt
 $ wlua help
-wlua 0.01, a web framework for Lua that is as simple as it is powerful.
+wlua 0.0.2, a web framework for Lua that is as simple as it is powerful.
 
 Usage: wlua COMMAND [OPTIONS]
 
@@ -98,6 +89,10 @@ $ wlua start
 ```bash
 $ curl -i http://localhost:8081
 ```
+
+### 路由语法
+
+路由已改用 [lua-rax] 库实现，具体规则参考 [lua-rax] 。 匹配规则和之前的 [lua-r3] 有所区别，主要原因是 [lua-r3] 编译需要太多的依赖。
 
 ## API 示例
 
@@ -144,10 +139,20 @@ use skynet service_provider create uniqservice
 - [wlua-demo] wlua 示例项目，配合 [vue-admin-template] 制作的后台模板
 - [skynet-admin] skynet 管理后台，深度集成 skynet cluster 集群管理
 
+## 参考
+
+- [skynet]
+- [gin]
+- [wlua-demo]
+- [vue-admin-template]
+- [skynet-admin]
+- [lua-rax]
+
 [skynet]: https://github.com/cloudwu/skynet
 [gin]: https://github.com/gin-gonic/gin
 [wlua-demo]: https://github.com/hanxi/wlua-demo
 [vue-admin-template]: https://github.com/PanJiaChen/vue-admin-template
 [skynet-admin]: https://github.com/hanxi/skynet-admin
-[libr3]: https://github.com/hanxi/lua-r3
+[lua-rax]: https://github.com/hanxi/lua-rax
+[lua-r3]: https://github.com/hanxi/lua-r3
 
