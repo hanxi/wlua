@@ -155,4 +155,4 @@ use skynet service_provider create uniqservice
 [skynet-admin]: https://github.com/hanxi/skynet-admin
 [lua-rax]: https://github.com/hanxi/lua-rax
 [lua-r3]: https://github.com/hanxi/lua-r3
-
+[wlua]: https://github.com/hanxi/wlua
