@@ -3,7 +3,7 @@ FROM ubuntu:22.04 AS builder
 COPY . /wlua
 
 RUN apt-get update && apt-get install -y \
-    git libssl-dev build-essential && \
+    git libssl-dev build-essential autoconf && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
     cd /wlua && make install WLUA_BIN=/usr/bin/wlua
