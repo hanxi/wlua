@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
 
 jobs:
   push_to_registry:
