@@ -5,7 +5,7 @@ local log = require "log"
 local rax = require "rax"
 local logger = require "middleware.logger"
 
-local M = { VERSION = '0.0.1' }
+local M = { VERSION = '0.0.2' }
 local mt = { __index = M }
 
 function M:new()
