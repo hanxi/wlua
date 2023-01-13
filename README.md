@@ -171,6 +171,7 @@ use skynet service_provider create uniqservice
 ## Other
 
 - More test in demo: <https://github.com/hanxi/wlua-demo>
+- Try wlua with docker compose: <https://github.com/hanxi/docker-compose-wlua>
 - More page in blog: <http://blog.hanxi.cc/p/74/>
 - A tools for monitor skyent cluster <https://github.com/hanxi/skynet-admin>
 
