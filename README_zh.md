@@ -1,6 +1,6 @@
 # wlua
 
-[![GitHub actions](https://github.com/hanxi/wlua/blob/main/.github/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/hanxi/wlua/actions)
+[![GitHub actions](https://github.com/hanxi/wlua/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/hanxi/wlua/actions)
 [![GitHub release](https://img.shields.io/github/release/hanxi/wlua.svg)](https://github.com/hanxi/wlua/releases/latest)
 [![license](https://img.shields.io/github/license/hanxi/wlua.svg)](https://github.com/hanxi/wlua/blob/master/LICENSE)
 
