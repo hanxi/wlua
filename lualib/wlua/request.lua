@@ -58,7 +58,6 @@ function M:new(id, interface)
         body_raw = body_raw,
         url = url,
         origin_uri = url,
-        uri = url,
         headers = headers, -- request headers
         code = code,
 

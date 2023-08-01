@@ -56,8 +56,12 @@ local function read_filecache(_, filepath)
     if f then
         local content = f:read "a"
         f:close()
-        local mimetype = via_content(content, filepath)
-        filecache[filepath] = { content, mimetype }
+		if content then
+			local mimetype = via_content(content, filepath)
+			filecache[filepath] = { content, mimetype }
+		else
+			filecache[filepath] = {}
+		end
     else
         filecache[filepath] = {}
     end
