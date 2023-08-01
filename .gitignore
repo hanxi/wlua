@@ -8,3 +8,4 @@
 *.dSYM
 .DS_Store
 /lualib/rax.lua
+.vscode
