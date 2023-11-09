@@ -46,6 +46,11 @@ function M:next()
     end
 end
 
+--中断调用,比如中间件验证失败
+function M:abort()
+    self.index = #self.handlers + 1
+end
+
 -- M:send(text, status, content_type)
 function M:send(...)
     self.res:send(...)
